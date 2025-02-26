@@ -13,7 +13,10 @@
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.751.0",
     "@aws-sdk/client-dynamodb-streams": "^3.750.0",
-    "@aws-sdk/lib-dynamodb": "^3.751.0"
+    "@aws-sdk/lib-dynamodb": "^3.751.0",
+    "@effect/platform": "^0.77.2",
+    "@effect/platform-node": "^0.73.2",
+    "effect": "^3.13.2"
   },
   "devDependencies": {
     "@types/node": "^22.13.5",
