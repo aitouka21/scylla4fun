@@ -1,7 +1,7 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { Context, Effect } from 'effect';
 
-export class DDBClient extends Context.Tag('DDBClient')<DDBClient, DynamoDBClient>() { }
+export class DDBClient extends Context.Tag('DDBClient')<DDBClient, DynamoDBClient>() {}
 
 type RoundRobinEndpointProviderConfig = Partial<{
   hostname?: string;

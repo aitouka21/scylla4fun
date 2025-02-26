@@ -5,25 +5,25 @@ import {
   GetRecordsCommand,
   GetRecordsCommandInput,
   GetShardIteratorCommand,
-} from "@aws-sdk/client-dynamodb-streams";
-import { DynamoDBClient, DescribeTableCommand } from "@aws-sdk/client-dynamodb";
+} from '@aws-sdk/client-dynamodb-streams';
+import { DynamoDBClient, DescribeTableCommand } from '@aws-sdk/client-dynamodb';
 
 {
   const client = new DynamoDBClient({
-    endpoint: "http://localhost:8000",
+    endpoint: 'http://localhost:8000',
   });
 
   const command = new DescribeTableCommand({
-    TableName: "Nokia3310Testing",
+    TableName: 'Nokia3310Testing',
   });
 
   const a = await client.send(command);
   var streamArn = a.Table?.LatestStreamArn;
-  if (!streamArn) throw new Error("missing stream arn");
+  if (!streamArn) throw new Error('missing stream arn');
 }
 
 const client = new DynamoDBStreamsClient({
-  endpoint: "http://localhost:8000",
+  endpoint: 'http://localhost:8000',
 });
 
 {
@@ -37,12 +37,10 @@ const client = new DynamoDBStreamsClient({
   do {
     const command = new DescribeStreamCommand(input);
     const result = await client.send(command);
-    input.ExclusiveStartShardId =
-      result.StreamDescription?.LastEvaluatedShardId;
+    input.ExclusiveStartShardId = result.StreamDescription?.LastEvaluatedShardId;
     if (result.StreamDescription)
       if (result.StreamDescription.Shards)
-        for (const shard of result.StreamDescription.Shards)
-          if (shard.ShardId) shardIds.push(shard.ShardId);
+        for (const shard of result.StreamDescription.Shards) if (shard.ShardId) shardIds.push(shard.ShardId);
   } while (input.ExclusiveStartShardId);
 }
 
@@ -51,7 +49,7 @@ for (const shardId of shardIds) {
   const command = new GetShardIteratorCommand({
     StreamArn: streamArn,
     ShardId: shardId,
-    ShardIteratorType: "TRIM_HORIZON",
+    ShardIteratorType: 'TRIM_HORIZON',
   });
   const result = await client.send(command);
   var shardIterator = result.ShardIterator;
@@ -66,7 +64,6 @@ for (const shardId of shardIds) {
     const result = await client.send(command);
     if (result.NextShardIterator === input.ShardIterator) break;
     input.ShardIterator = result.NextShardIterator;
-    if (result.Records)
-      for (const record of result.Records) console.dir(record, { depth: null });
+    if (result.Records) for (const record of result.Records) console.dir(record, { depth: null });
   } while (input.ShardIterator);
 }
