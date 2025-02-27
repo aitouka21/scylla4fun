@@ -2,6 +2,7 @@ services:
   scylla-node1:
     container_name: scylla-node1
     image: scylladb/scylla:latest
+    restart: always
     command:
       - --seeds=scylla-node1
       - --smp=1
@@ -16,6 +17,7 @@ services:
   scylla-node2:
     container_name: scylla-node2
     image: scylladb/scylla:latest
+    restart: always
     command:
       - --seeds=scylla-node1
       - --smp=1
@@ -30,6 +32,7 @@ services:
   scylla-node3:
     container_name: scylla-node3
     image: scylladb/scylla:latest
+    restart: always
     command:
       - --seeds=scylla-node1
       - --smp=1

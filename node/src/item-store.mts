@@ -1,11 +1,12 @@
 import { DynamoDBDocumentClient, GetCommand, PutCommand, ScanCommand } from '@aws-sdk/lib-dynamodb';
-import { Config, Context, Effect } from 'effect';
+import { Config, Context, DateTime, Effect } from 'effect';
 import { DDBClient } from './ddb-client.mjs';
+import { ItemSchema } from './schema.mjs';
 
+type Item = typeof ItemSchema.Type;
 type PrimaryKey = { key: string; subkey: string };
-type Item = PrimaryKey & { value: number };
 
-export class ItemStore extends Context.Tag('ItemStore')<ItemStore, Effect.Effect.Success<typeof ItemStoreLive>>() {}
+export class ItemStore extends Context.Tag('ItemStore')<ItemStore, Effect.Effect.Success<typeof ItemStoreLive>>() { }
 
 export const ItemStoreLive = Effect.gen(function* () {
   const TableName = yield* Config.string('ITEM_STORE_TABLE_NAME');
@@ -30,7 +31,16 @@ export const ItemStoreLive = Effect.gen(function* () {
 
     put: (Key: PrimaryKey, value: number) =>
       Effect.gen(function* () {
-        const Item: Item = { key: Key.key, subkey: Key.subkey, value };
+        const Item: Item = {
+          key: Key.key,
+          subkey: Key.subkey,
+          value,
+          metadata: {
+            createdAt: DateTime.unsafeNow(),
+            createdBy: 'API',
+            tag: ['foo', 'bar', 'baz'],
+          },
+        };
         const command = new PutCommand({ TableName, Item });
         const result = yield* Effect.tryPromise(() => ddbClient.send(command));
         yield* Effect.logTrace('put command result').pipe(Effect.annotateLogs({ result }));
